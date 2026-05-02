@@ -1,10 +1,16 @@
 package com.example.orderservice.service;
 
+import com.example.orderservice.client.PaymentClient;
 import com.example.orderservice.dto.CreateOrderRequest;
+import com.example.orderservice.dto.OrderResponse;
 import com.example.orderservice.model.Order;
+import com.example.orderservice.model.OrderStatus;
 import com.example.orderservice.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
@@ -18,7 +24,8 @@ public class OrderService {
         this.paymentClient = paymentClient;
     }
 
-    public Order createOrder(CreateOrderRequest request) {
+    @Transactional
+    public OrderResponse createOrder(CreateOrderRequest request) {
         Order order = new Order(
                 request.customerName(),
                 request.productName(),
@@ -26,28 +33,36 @@ public class OrderService {
                 request.totalPrice()
         );
 
-        // Save the order first
         Order savedOrder = orderRepository.save(order);
 
-        // Initiate payment
         var paymentResponse = paymentClient.initiatePayment(savedOrder.getId(), savedOrder.getTotalPrice());
 
-        // Update order status based on payment response
         if (paymentResponse != null && "SUCCESS".equals(paymentResponse.status())) {
-            savedOrder.setStatus("PAYMENT_INITIATED");
+            savedOrder.setStatus(OrderStatus.PAYMENT_INITIATED);
         } else {
-            savedOrder.setStatus("PAYMENT_FAILED");
+            savedOrder.setStatus(OrderStatus.PAYMENT_FAILED);
         }
 
-        return orderRepository.save(savedOrder);
+        return toResponse(orderRepository.save(savedOrder));
     }
 
-    public Optional<Order> getOrder(Long id) {
-        return orderRepository.findById(id);
+    public Optional<OrderResponse> getOrder(Long id) {
+        return orderRepository.findById(id).map(this::toResponse);
     }
 
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable).map(this::toResponse);
     }
 
+    private OrderResponse toResponse(Order order) {
+        return new OrderResponse(
+                order.getId(),
+                order.getCustomerName(),
+                order.getProductName(),
+                order.getQuantity(),
+                order.getTotalPrice(),
+                order.getStatus().name(),
+                order.getCreatedAt()
+        );
+    }
 }

@@ -8,10 +8,12 @@ spring:
     password:
   h2:
     console:
+      # TODO: remove H2 before any non-dev deployment; gate behind dev profile
       enabled: true
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
+      # TODO: replace with 'validate' + Flyway/Liquibase before production
       ddl-auto: update
     show-sql: false
     properties:

@@ -4,11 +4,11 @@ stages:
 
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
 
 cache:
   paths:
-    - .gradle/caches
-    - .gradle/wrapper
+    - .gradle/
 
 build:
   stage: build

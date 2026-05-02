@@ -4,6 +4,7 @@ import com.example.paymentservice.dto.CreatePaymentRequest;
 import com.example.paymentservice.dto.PaymentResponse;
 import com.example.paymentservice.model.Payment;
 import com.example.paymentservice.service.PaymentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +20,9 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
+    public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
         Payment payment = paymentService.createPayment(request);
-        PaymentResponse response = toResponse(payment);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(payment));
     }
 
     @GetMapping("/{id}")
@@ -44,10 +44,9 @@ public class PaymentController {
             payment.getId(),
             payment.getOrderId(),
             payment.getAmount(),
-            payment.getStatus(),
+            payment.getStatus().name(),
             payment.getPaymentMethod(),
             payment.getCreatedAt()
         );
     }
-
 }

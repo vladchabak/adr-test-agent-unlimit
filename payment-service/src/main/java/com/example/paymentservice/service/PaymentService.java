@@ -2,6 +2,7 @@ package com.example.paymentservice.service;
 
 import com.example.paymentservice.dto.CreatePaymentRequest;
 import com.example.paymentservice.model.Payment;
+import com.example.paymentservice.model.PaymentStatus;
 import com.example.paymentservice.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,9 @@ public class PaymentService {
 
     public Payment createPayment(CreatePaymentRequest request) {
         Payment payment = new Payment(request.orderId(), request.amount());
-        payment.setStatus("PENDING");
-        payment.setPaymentMethod("CARD");
 
-        // Simulate payment processing
-        processPayment(payment);
-
-        // Set status to COMPLETED after processing
-        payment.setStatus("COMPLETED");
+        boolean success = processPayment(payment);
+        payment.setStatus(success ? PaymentStatus.SUCCESS : PaymentStatus.FAILED);
 
         return paymentRepository.save(payment);
     }
@@ -38,13 +34,8 @@ public class PaymentService {
         return paymentRepository.findByOrderId(orderId);
     }
 
-    private void processPayment(Payment payment) {
-        // Simulate payment processing logic
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    private boolean processPayment(Payment payment) {
+        // Placeholder for real payment provider integration
+        return true;
     }
-
 }
