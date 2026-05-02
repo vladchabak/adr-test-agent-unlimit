@@ -1,0 +1,40 @@
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.flattened-pom.xml
+
+# Build
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# Gradle
+.gradle/
+build/
+
+# Spring Boot
+.spring/
+
+# Logs
+*.log
+logs/
+
+# Package Files
+*.hprof

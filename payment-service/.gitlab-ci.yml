@@ -1,0 +1,23 @@
+stages:
+  - build
+  - test
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+cache:
+  paths:
+    - .gradle/caches
+    - .gradle/wrapper
+
+build:
+  stage: build
+  image: gradle:8.5-jdk21
+  script:
+    - gradle clean compileJava
+
+test:
+  stage: test
+  image: gradle:8.5-jdk21
+  script:
+    - gradle test

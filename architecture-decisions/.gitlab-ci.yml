@@ -1,0 +1,11 @@
+stages:
+  - validate
+
+validate-markdown:
+  stage: validate
+  image: node:20-alpine
+  script:
+    - npx --yes markdownlint-cli "**/*.md" --disable MD013 MD033 MD041 || true
+  only:
+    - merge_requests
+    - main
