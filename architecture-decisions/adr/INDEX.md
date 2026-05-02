@@ -14,7 +14,10 @@ Example: `0001-rest-api-inter-service-communication.md`
 
 | ID | Title | Status | Services | Date | File |
 |---|-------|--------|----------|------|------|
-| — | *No ADRs yet. First ADR will be 0001.* | — | — | — | — |
+| 0001 | Microservices Architecture — Two Separate Services | Accepted | order-service, payment-service | 2026-05-02 | [0001-microservices-architecture.md](0001-microservices-architecture.md) |
+| 0002 | Synchronous REST Communication Between Services | Accepted | order-service, payment-service | 2026-05-02 | [0002-synchronous-rest-inter-service-communication.md](0002-synchronous-rest-inter-service-communication.md) |
+| 0003 | Resilient Order Creation with Payment Fallback | Accepted | order-service | 2026-05-02 | [0003-resilient-order-creation-with-payment-fallback.md](0003-resilient-order-creation-with-payment-fallback.md) |
+| 0004 | H2 In-Memory Database for Persistence | Accepted | order-service, payment-service | 2026-05-02 | [0004-h2-in-memory-database.md](0004-h2-in-memory-database.md) |
 
 <!-- New ADRs should be added above this comment, in chronological order -->
 
