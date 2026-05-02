@@ -18,6 +18,9 @@ Example: `0001-rest-api-inter-service-communication.md`
 | 0002 | Synchronous REST Communication Between Services | Accepted | order-service, payment-service | 2026-05-02 | [0002-synchronous-rest-inter-service-communication.md](0002-synchronous-rest-inter-service-communication.md) |
 | 0003 | Resilient Order Creation with Payment Fallback | Accepted | order-service | 2026-05-02 | [0003-resilient-order-creation-with-payment-fallback.md](0003-resilient-order-creation-with-payment-fallback.md) |
 | 0004 | H2 In-Memory Database for Persistence | Accepted | order-service, payment-service | 2026-05-02 | [0004-h2-in-memory-database.md](0004-h2-in-memory-database.md) |
+| 0005 | V2 API — Order State Machine and Cancellation Flow | Proposed | order-service, payment-service | 2026-05-02 | [0005-v2-order-state-machine-and-cancellation.md](0005-v2-order-state-machine-and-cancellation.md) |
+| 0006 | Refund Processing and V2 Payment Workflow | Proposed | payment-service, order-service | 2026-05-02 | [0006-refund-processing-v2-payment-workflow.md](0006-refund-processing-v2-payment-workflow.md) |
+| 0007 | WebSocket Real-Time Payment Status Notifications | Proposed | payment-service | 2026-05-02 | [0007-websocket-payment-status-notifications.md](0007-websocket-payment-status-notifications.md) |
 
 <!-- New ADRs should be added above this comment, in chronological order -->
 
