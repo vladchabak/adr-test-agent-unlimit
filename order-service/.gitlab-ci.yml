@@ -12,12 +12,12 @@ cache:
 
 build:
   stage: build
-  image: gradle:8.5-jdk21
+  image: gradle:9.4.0-jdk21
   script:
     - gradle clean compileJava
 
 test:
   stage: test
-  image: gradle:8.5-jdk21
+  image: gradle:9.4.0-jdk21
   script:
     - gradle test
