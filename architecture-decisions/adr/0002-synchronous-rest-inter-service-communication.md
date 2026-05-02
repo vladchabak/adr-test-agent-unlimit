@@ -16,10 +16,11 @@ The system needed a simple, debuggable, and low-infrastructure integration path 
 order-service calls payment-service synchronously over HTTP REST using Spring's `RestTemplate`.
 
 **Implemented as**:
-- `PaymentClient` class in order-service (`com.example.orderservice.service.PaymentClient`)
+- `PaymentClient` class in order-service (`com.example.orderservice.client.PaymentClient`)
 - Sends `POST /api/payments` with `{ orderId, amount }` payload
 - Payment service URL is externalized to config: `payment.service.url` in `application.yml` (default: `http://localhost:8081`)
-- No connection pooling, retries, or circuit breaker configured at this time
+- RestTemplate configured with 3s connect / 5s read timeout (added in code-review hardening, 2026-05-02)
+- No retries or circuit breaker configured at this time
 
 ## Consequences
 
@@ -59,7 +60,9 @@ Response (HTTP 201):
 }
 ```
 
-⚠️ **Known Contract Inconsistency**: order-service checks `status == "SUCCESS"` to mark an order as `PAYMENT_INITIATED`, but payment-service always returns `status = "COMPLETED"`. As a result, all orders currently end up with status `PAYMENT_FAILED` even when payment processing succeeds. This must be aligned — either payment-service should return `"SUCCESS"` or order-service should accept `"COMPLETED"`.
+~~⚠️ **Known Contract Inconsistency**: order-service checks `status == "SUCCESS"` to mark an order as `PAYMENT_INITIATED`, but payment-service always returns `status = "COMPLETED"`. As a result, all orders currently end up with status `PAYMENT_FAILED` even when payment processing succeeds.~~
+
+✅ **Resolved 2026-05-02**: `PaymentService.createPayment()` now sets status to `PaymentStatus.SUCCESS` (via enum, serialised as `"SUCCESS"`). order-service correctly receives `"SUCCESS"` and transitions orders to `PAYMENT_INITIATED`. Both services now use `PaymentStatus` enum to prevent future string drift.
 
 ## Alternatives Considered
 

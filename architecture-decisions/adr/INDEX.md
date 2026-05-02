@@ -21,6 +21,7 @@ Example: `0001-rest-api-inter-service-communication.md`
 | 0005 | V2 API — Order State Machine and Cancellation Flow | Proposed | order-service, payment-service | 2026-05-02 | [0005-v2-order-state-machine-and-cancellation.md](0005-v2-order-state-machine-and-cancellation.md) |
 | 0006 | Refund Processing and V2 Payment Workflow | Proposed | payment-service, order-service | 2026-05-02 | [0006-refund-processing-v2-payment-workflow.md](0006-refund-processing-v2-payment-workflow.md) |
 | 0007 | WebSocket Real-Time Payment Status Notifications | Proposed | payment-service | 2026-05-02 | [0007-websocket-payment-status-notifications.md](0007-websocket-payment-status-notifications.md) |
+| 0008 | Code-Review Architectural Hardening | Accepted | order-service, payment-service | 2026-05-02 | [0008-code-review-architectural-hardening.md](0008-code-review-architectural-hardening.md) |
 
 <!-- New ADRs should be added above this comment, in chronological order -->
 

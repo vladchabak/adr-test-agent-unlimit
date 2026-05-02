@@ -4,6 +4,8 @@ This document tracks all architecturally significant changes across our microser
 
 | # | Date | Service | Change Type | Summary | ADR |
 |---|------|---------|-------------|---------|-----|
+| 12 | 2026-05-02 | order-service, payment-service | Quality | Code-review hardening: 8 architectural patterns established — enums for status, response DTOs, pagination, @Transactional, RestTemplate timeouts, SLF4J, constructor @Value, @PrePersist | [ADR 0008](adr/0008-code-review-architectural-hardening.md) |
+| 11 | 2026-05-02 | order-service, payment-service | Bug Fix | ADR 0002 amendment: SUCCESS/COMPLETED status contract mismatch resolved; PaymentClient moved to client/ package | [ADR 0002](adr/0002-synchronous-rest-inter-service-communication.md) |
 | 10 | 2026-05-02 | payment-service | Refactoring | PAY-087: PaymentValidator extracted to dedicated component; interface introduced for future composable validator implementations (open MR) | — |
 | 9 | 2026-05-02 | payment-service | Feature | PAY-095: WebSocket endpoint added at /ws/payment-status for real-time payment notifications; at-most-once delivery; per-payment subscriptions (open MR) | [ADR 0007](adr/0007-websocket-payment-status-notifications.md) |
 | 8 | 2026-05-02 | payment-service | API | PLAT-034: V2 payment API with refund processing, idempotency guarantee, and atomic refund+payment-status update (open MR) | [ADR 0006](adr/0006-refund-processing-v2-payment-workflow.md) |
