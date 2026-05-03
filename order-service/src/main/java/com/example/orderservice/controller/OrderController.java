@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -35,5 +37,13 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<Page<OrderResponse>> getAllOrders(Pageable pageable) {
         return ResponseEntity.ok(orderService.getAllOrders(pageable));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchOrders(@RequestParam String customerName) {
+        // ⚠️ VULNERABLE: Direct string concatenation in SQL query
+        String query = "SELECT * FROM orders WHERE customer_name = '" + customerName + "'";
+        // This would be executed as raw SQL - SQL injection risk!
+        return ResponseEntity.ok(Collections.singletonMap("query", query));
     }
 }
