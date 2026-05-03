@@ -21,3 +21,8 @@ spring:
 payment:
   service:
     url: http://localhost:8081
+
+sendgrid:
+  api:
+    url: https://api.sendgrid.com
+    key: ${SENDGRID_API_KEY:sk_test_fake_key_for_dev}

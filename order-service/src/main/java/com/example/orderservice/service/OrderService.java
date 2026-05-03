@@ -18,10 +18,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final PaymentClient paymentClient;
+    private final EmailNotificationClient emailNotificationClient;
 
-    public OrderService(OrderRepository orderRepository, PaymentClient paymentClient) {
+    public OrderService(OrderRepository orderRepository, PaymentClient paymentClient, EmailNotificationClient emailNotificationClient) {
         this.orderRepository = orderRepository;
         this.paymentClient = paymentClient;
+        this.emailNotificationClient = emailNotificationClient;
     }
 
     @Transactional
@@ -43,7 +45,16 @@ public class OrderService {
             savedOrder.setStatus(OrderStatus.PAYMENT_FAILED);
         }
 
-        return toResponse(orderRepository.save(savedOrder));
+        OrderResponse response = toResponse(orderRepository.save(savedOrder));
+
+        // Send confirmation email via external SendGrid service
+        emailNotificationClient.sendOrderConfirmationEmail(
+                request.customerName(),
+                request.customerName(),
+                savedOrder.getId()
+        );
+
+        return response;
     }
 
     public Optional<OrderResponse> getOrder(Long id) {
