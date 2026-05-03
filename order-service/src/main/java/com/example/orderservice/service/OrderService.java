@@ -24,32 +24,35 @@ public class OrderService {
         this.paymentClient = paymentClient;
     }
 
-    @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
-        Order order = new Order(
-                request.customerName(),
-                request.productName(),
-                request.quantity(),
-                request.totalPrice()
-        );
+        Order saved = saveNewOrder(request);
 
-        Order savedOrder = orderRepository.save(order);
+        var resp = paymentClient.initiatePayment(saved.getId(), saved.getTotalPrice());
+        OrderStatus status = (resp != null && "SUCCESS".equals(resp.status()))
+                ? OrderStatus.PAYMENT_INITIATED : OrderStatus.PAYMENT_FAILED;
 
-        var paymentResponse = paymentClient.initiatePayment(savedOrder.getId(), savedOrder.getTotalPrice());
-
-        if (paymentResponse != null && "SUCCESS".equals(paymentResponse.status())) {
-            savedOrder.setStatus(OrderStatus.PAYMENT_INITIATED);
-        } else {
-            savedOrder.setStatus(OrderStatus.PAYMENT_FAILED);
-        }
-
-        return toResponse(orderRepository.save(savedOrder));
+        return applyStatus(saved.getId(), status);
     }
 
+    @Transactional
+    private Order saveNewOrder(CreateOrderRequest req) {
+        return orderRepository.save(new Order(req.customerName(), req.productName(),
+                req.quantity(), req.totalPrice()));
+    }
+
+    @Transactional
+    private OrderResponse applyStatus(Long id, OrderStatus status) {
+        Order o = orderRepository.findById(id).orElseThrow();
+        o.setStatus(status);
+        return toResponse(o);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<OrderResponse> getOrder(Long id) {
         return orderRepository.findById(id).map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<OrderResponse> getAllOrders(Pageable pageable) {
         return orderRepository.findAll(pageable).map(this::toResponse);
     }
@@ -61,7 +64,7 @@ public class OrderService {
                 order.getProductName(),
                 order.getQuantity(),
                 order.getTotalPrice(),
-                order.getStatus().name(),
+                order.getStatus(),
                 order.getCreatedAt()
         );
     }

@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Table(name = "payments")
 public class Payment {
 
+    private static final String DEFAULT_PAYMENT_METHOD = "CARD";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,8 +41,7 @@ public class Payment {
     public Payment(Long orderId, BigDecimal amount) {
         this.orderId = orderId;
         this.amount = amount;
-        this.status = PaymentStatus.PENDING;
-        this.paymentMethod = "CARD";
+        this.paymentMethod = DEFAULT_PAYMENT_METHOD;
     }
 
     public Long getId() { return id; }

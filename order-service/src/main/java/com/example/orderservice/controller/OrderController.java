@@ -5,7 +5,9 @@ import com.example.orderservice.dto.OrderResponse;
 import com.example.orderservice.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,10 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<Page<OrderResponse>> getAllOrders(Pageable pageable) {
-        return ResponseEntity.ok(orderService.getAllOrders(pageable));
+        int maxPageSize = 100;
+        int pageSize = Math.min(pageable.getPageSize(), maxPageSize);
+        Pageable limitedPageable = PageRequest.of(pageable.getPageNumber(), pageSize,
+                pageable.getSort().isEmpty() ? Sort.by("createdAt").descending() : pageable.getSort());
+        return ResponseEntity.ok(orderService.getAllOrders(limitedPageable));
     }
 }

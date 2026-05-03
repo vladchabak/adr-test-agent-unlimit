@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -55,9 +56,9 @@ class PaymentClientTest {
     }
 
     @Test
-    void initiatePayment_unexpectedException_returnsNull() {
+    void initiatePayment_httpError_returnsNull() {
         when(restTemplate.postForObject(anyString(), any(), eq(PaymentResponse.class)))
-                .thenThrow(new RuntimeException("Unexpected error"));
+                .thenThrow(new RestClientException("HTTP 500 Server Error"));
 
         PaymentResponse result = paymentClient.initiatePayment(2L, new BigDecimal("50.00"));
 

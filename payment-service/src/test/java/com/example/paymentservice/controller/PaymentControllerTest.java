@@ -1,6 +1,7 @@
 package com.example.paymentservice.controller;
 
 import com.example.paymentservice.dto.CreatePaymentRequest;
+import com.example.paymentservice.dto.PaymentResponse;
 import com.example.paymentservice.model.Payment;
 import com.example.paymentservice.model.PaymentStatus;
 import com.example.paymentservice.service.PaymentService;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +39,10 @@ class PaymentControllerTest {
         p.setId(id);
         p.setStatus(status);
         return p;
+    }
+
+    private PaymentResponse buildPaymentResponse(Long id, Long orderId, PaymentStatus status) {
+        return new PaymentResponse(id, orderId, new BigDecimal("99.99"), status.name(), "CARD", LocalDateTime.now());
     }
 
     @Test
@@ -91,8 +97,8 @@ class PaymentControllerTest {
 
     @Test
     void getPayment_existingId_returns200WithBody() throws Exception {
-        when(paymentService.getPayment(1L))
-                .thenReturn(Optional.of(buildPayment(1L, 2L, PaymentStatus.SUCCESS)));
+        when(paymentService.getPaymentResponse(1L))
+                .thenReturn(Optional.of(buildPaymentResponse(1L, 2L, PaymentStatus.SUCCESS)));
 
         mockMvc.perform(get("/api/payments/1"))
                 .andExpect(status().isOk())
@@ -104,7 +110,7 @@ class PaymentControllerTest {
 
     @Test
     void getPayment_nonExistentId_returns404() throws Exception {
-        when(paymentService.getPayment(99L)).thenReturn(Optional.empty());
+        when(paymentService.getPaymentResponse(99L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/payments/99"))
                 .andExpect(status().isNotFound());
@@ -112,8 +118,8 @@ class PaymentControllerTest {
 
     @Test
     void getPaymentByOrderId_existingOrderId_returns200WithBody() throws Exception {
-        when(paymentService.getPaymentByOrderId(5L))
-                .thenReturn(Optional.of(buildPayment(1L, 5L, PaymentStatus.SUCCESS)));
+        when(paymentService.getPaymentResponseByOrderId(5L))
+                .thenReturn(Optional.of(buildPaymentResponse(1L, 5L, PaymentStatus.SUCCESS)));
 
         mockMvc.perform(get("/api/payments/order/5"))
                 .andExpect(status().isOk())
@@ -123,7 +129,7 @@ class PaymentControllerTest {
 
     @Test
     void getPaymentByOrderId_nonExistentOrderId_returns404() throws Exception {
-        when(paymentService.getPaymentByOrderId(999L)).thenReturn(Optional.empty());
+        when(paymentService.getPaymentResponseByOrderId(999L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/payments/order/999"))
                 .andExpect(status().isNotFound());

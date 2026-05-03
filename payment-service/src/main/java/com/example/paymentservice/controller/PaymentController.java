@@ -22,25 +22,7 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
         Payment payment = paymentService.createPayment(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(payment));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PaymentResponse> getPayment(@PathVariable Long id) {
-        return paymentService.getPayment(id)
-            .map(payment -> ResponseEntity.ok(toResponse(payment)))
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable Long orderId) {
-        return paymentService.getPaymentByOrderId(orderId)
-            .map(payment -> ResponseEntity.ok(toResponse(payment)))
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    private PaymentResponse toResponse(Payment payment) {
-        return new PaymentResponse(
+        PaymentResponse response = new PaymentResponse(
             payment.getId(),
             payment.getOrderId(),
             payment.getAmount(),
@@ -48,5 +30,20 @@ public class PaymentController {
             payment.getPaymentMethod(),
             payment.getCreatedAt()
         );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable Long id) {
+        return paymentService.getPaymentResponse(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable Long orderId) {
+        return paymentService.getPaymentResponseByOrderId(orderId)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 }

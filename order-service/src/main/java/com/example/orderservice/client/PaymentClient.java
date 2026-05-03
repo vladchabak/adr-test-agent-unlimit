@@ -5,12 +5,13 @@ import com.example.orderservice.dto.PaymentResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
-@Service
+@Component
 public class PaymentClient {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentClient.class);
@@ -27,7 +28,7 @@ public class PaymentClient {
         String url = paymentServiceUrl + "/api/payments";
         try {
             return restTemplate.postForObject(url, new PaymentRequest(orderId, amount), PaymentResponse.class);
-        } catch (Exception e) {
+        } catch (RestClientException e) {
             log.error("Failed to initiate payment for order {}: ", orderId, e);
             return null;
         }

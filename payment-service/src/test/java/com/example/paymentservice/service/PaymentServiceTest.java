@@ -4,10 +4,10 @@ import com.example.paymentservice.dto.CreatePaymentRequest;
 import com.example.paymentservice.model.Payment;
 import com.example.paymentservice.model.PaymentStatus;
 import com.example.paymentservice.repository.PaymentRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -24,8 +24,12 @@ class PaymentServiceTest {
     @Mock
     private PaymentRepository paymentRepository;
 
-    @InjectMocks
     private PaymentService paymentService;
+
+    @BeforeEach
+    void setUp() {
+        paymentService = new PaymentService(paymentRepository);
+    }
 
     private Payment buildPayment(Long orderId, PaymentStatus status) {
         Payment p = new Payment(orderId, new BigDecimal("99.99"));
