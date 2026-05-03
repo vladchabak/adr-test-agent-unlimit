@@ -1,5 +1,6 @@
 package com.example.orderservice.client;
 
+import com.example.orderservice.dto.OrderItem;
 import com.example.orderservice.dto.PaymentRequest;
 import com.example.orderservice.dto.PaymentResponse;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class PaymentClient {
@@ -23,10 +25,10 @@ public class PaymentClient {
         this.paymentServiceUrl = paymentServiceUrl;
     }
 
-    public PaymentResponse initiatePayment(Long orderId, BigDecimal amount) {
+    public PaymentResponse initiatePayment(Long orderId, BigDecimal amount, List<OrderItem> items) {
         String url = paymentServiceUrl + "/api/payments";
         try {
-            return restTemplate.postForObject(url, new PaymentRequest(orderId, amount), PaymentResponse.class);
+            return restTemplate.postForObject(url, new PaymentRequest(orderId, amount, items), PaymentResponse.class);
         } catch (Exception e) {
             log.error("Failed to initiate payment for order {}: ", orderId, e);
             return null;

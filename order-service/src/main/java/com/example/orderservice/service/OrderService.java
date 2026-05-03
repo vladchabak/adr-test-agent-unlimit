@@ -2,6 +2,7 @@ package com.example.orderservice.service;
 
 import com.example.orderservice.client.PaymentClient;
 import com.example.orderservice.dto.CreateOrderRequest;
+import com.example.orderservice.dto.OrderItem;
 import com.example.orderservice.dto.OrderResponse;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderStatus;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,7 +37,12 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        var paymentResponse = paymentClient.initiatePayment(savedOrder.getId(), savedOrder.getTotalPrice());
+        List<OrderItem> items = List.of(new OrderItem(
+                savedOrder.getProductName(),
+                savedOrder.getQuantity(),
+                savedOrder.getTotalPrice()
+        ));
+        var paymentResponse = paymentClient.initiatePayment(savedOrder.getId(), savedOrder.getTotalPrice(), items);
 
         if (paymentResponse != null && "SUCCESS".equals(paymentResponse.status())) {
             savedOrder.setStatus(OrderStatus.PAYMENT_INITIATED);
