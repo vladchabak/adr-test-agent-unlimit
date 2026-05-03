@@ -2,6 +2,7 @@ package com.example.orderservice.controller;
 
 import com.example.orderservice.dto.CreateOrderRequest;
 import com.example.orderservice.dto.OrderResponse;
+import com.example.orderservice.model.OrderStatus;
 import com.example.orderservice.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class OrderControllerTest {
     private ObjectMapper objectMapper;
 
     private OrderResponse sampleResponse() {
-        return new OrderResponse(1L, "John Doe", "Laptop", 1, new BigDecimal("999.99"), "PAYMENT_INITIATED", null);
+        return new OrderResponse(1L, "John Doe", "Laptop", 1, new BigDecimal("999.99"), OrderStatus.PAYMENT_INITIATED, null);
     }
 
     @Test

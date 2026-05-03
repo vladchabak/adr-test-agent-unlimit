@@ -24,7 +24,9 @@ public class OrderService {
         this.paymentClient = paymentClient;
     }
 
-    @Transactional
+    // Not @Transactional: save initial order first (commits immediately), then call payment
+    // service outside any transaction so the DB connection is not held during the HTTP call,
+    // then persist the status update in a second short transaction.
     public OrderResponse createOrder(CreateOrderRequest request) {
         Order order = new Order(
                 request.customerName(),
@@ -37,19 +39,19 @@ public class OrderService {
 
         var paymentResponse = paymentClient.initiatePayment(savedOrder.getId(), savedOrder.getTotalPrice());
 
-        if (paymentResponse != null && "SUCCESS".equals(paymentResponse.status())) {
-            savedOrder.setStatus(OrderStatus.PAYMENT_INITIATED);
-        } else {
-            savedOrder.setStatus(OrderStatus.PAYMENT_FAILED);
-        }
-
+        OrderStatus newStatus = (paymentResponse != null && "SUCCESS".equals(paymentResponse.status()))
+                ? OrderStatus.PAYMENT_INITIATED
+                : OrderStatus.PAYMENT_FAILED;
+        savedOrder.setStatus(newStatus);
         return toResponse(orderRepository.save(savedOrder));
     }
 
+    @Transactional(readOnly = true)
     public Optional<OrderResponse> getOrder(Long id) {
         return orderRepository.findById(id).map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<OrderResponse> getAllOrders(Pageable pageable) {
         return orderRepository.findAll(pageable).map(this::toResponse);
     }
@@ -61,7 +63,7 @@ public class OrderService {
                 order.getProductName(),
                 order.getQuantity(),
                 order.getTotalPrice(),
-                order.getStatus().name(),
+                order.getStatus(),
                 order.getCreatedAt()
         );
     }

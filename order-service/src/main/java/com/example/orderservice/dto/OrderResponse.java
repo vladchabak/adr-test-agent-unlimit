@@ -1,5 +1,6 @@
 package com.example.orderservice.dto;
 
+import com.example.orderservice.model.OrderStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -9,6 +10,6 @@ public record OrderResponse(
         String productName,
         Integer quantity,
         BigDecimal totalPrice,
-        String status,
+        OrderStatus status,
         LocalDateTime createdAt
 ) {}

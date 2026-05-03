@@ -10,7 +10,6 @@ import com.example.orderservice.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -35,7 +34,6 @@ class OrderServiceTest {
     @Mock
     private PaymentClient paymentClient;
 
-    @InjectMocks
     private OrderService orderService;
 
     private Order savedOrder;
@@ -43,6 +41,7 @@ class OrderServiceTest {
 
     @BeforeEach
     void setUp() {
+        orderService = new OrderService(orderRepository, paymentClient);
         createRequest = new CreateOrderRequest("John Doe", "Laptop", 1, new BigDecimal("999.99"));
         savedOrder = new Order("John Doe", "Laptop", 1, new BigDecimal("999.99"));
         savedOrder.setId(1L);
@@ -50,13 +49,13 @@ class OrderServiceTest {
 
     @Test
     void createOrder_paymentSuccess_setsPaymentInitiatedStatus() {
-        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
+        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder, savedOrder);
         when(paymentClient.initiatePayment(1L, new BigDecimal("999.99")))
                 .thenReturn(new PaymentResponse(1L, 1L, "SUCCESS"));
 
         OrderResponse result = orderService.createOrder(createRequest);
 
-        assertThat(result.status()).isEqualTo(OrderStatus.PAYMENT_INITIATED.name());
+        assertThat(result.status()).isEqualTo(OrderStatus.PAYMENT_INITIATED);
         assertThat(result.customerName()).isEqualTo("John Doe");
         assertThat(result.totalPrice()).isEqualByComparingTo("999.99");
         verify(orderRepository, times(2)).save(any(Order.class));
@@ -64,23 +63,23 @@ class OrderServiceTest {
 
     @Test
     void createOrder_paymentReturnsNonSuccessStatus_setsPaymentFailedStatus() {
-        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
+        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder, savedOrder);
         when(paymentClient.initiatePayment(any(), any()))
                 .thenReturn(new PaymentResponse(1L, 1L, "FAILED"));
 
         OrderResponse result = orderService.createOrder(createRequest);
 
-        assertThat(result.status()).isEqualTo(OrderStatus.PAYMENT_FAILED.name());
+        assertThat(result.status()).isEqualTo(OrderStatus.PAYMENT_FAILED);
     }
 
     @Test
     void createOrder_paymentClientReturnsNull_setsPaymentFailedStatus() {
-        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
+        when(orderRepository.save(any(Order.class))).thenReturn(savedOrder, savedOrder);
         when(paymentClient.initiatePayment(any(), any())).thenReturn(null);
 
         OrderResponse result = orderService.createOrder(createRequest);
 
-        assertThat(result.status()).isEqualTo(OrderStatus.PAYMENT_FAILED.name());
+        assertThat(result.status()).isEqualTo(OrderStatus.PAYMENT_FAILED);
     }
 
     @Test
